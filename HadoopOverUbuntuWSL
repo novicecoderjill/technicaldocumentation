@@ -1,0 +1,109 @@
+# Installing Hadoop over Ubuntu WSL
+
+Date: March 9, 2024
+
+1. Open WSL
+2. Update system
+
+```bash
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install openssh-server
+```
+
+1. Check Java Installation
+
+```bash
+sudo apt-get install openjdk-8-jdk
+java -version
+```
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled.png)
+
+1. Install Hadoop  tar.gz via terminal
+
+[Apache Download Mirrors](https://www.apache.org/dyn/closer.cgi/hadoop/common/hadoop-2.10.2/hadoop-2.10.2.tar.gz)
+
+```bash
+wget https://dlcdn.apache.org/hadoop/common/hadoop-2.10.2/hadoop-2.10.2.tar.gz
+
+```
+
+```bash
+tar -xzvf hadoop-2.10.2.tar.gz
+```
+
+Important to note: Update the line according to the downloaded version of hadoop
+
+```bash
+sudo mv hadoop-2.10.2 /home/<USER>/hadoop/
+```
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%201.png)
+
+1. Configuring Hadoop Java Home
+
+```bash
+readlink -f /usr/bin/java | sed "s:bin/java::"
+```
+
+The path to Java, /usr/bin/java is a symlink to /etc/alternatives/java, which is in turn a symlink to default Java binary. We will use readlink with the -f flag to follow every symlink in every part of the path, recursively. Then, we'll use sed to trim bin/java from the output to give us the correct value for JAVA_HOME.
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%202.png)
+
+```bash
+sudo nano /home/<USER>/hadoop/etc/hadoop/hadoop-env.sh
+```
+
+In the nano, update JAVA_HOME
+
+```bash
+# The java implementation to use.
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+```
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%203.png)
+
+1. Run Hadoop
+
+```bash
+/home/<USER>/hadoop/bin/hadoop
+```
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%204.png)
+
+```bash
+mkdir ~/input
+```
+
+```bash
+cp /home/<USER>/hadoop/etc/hadoop/*.xml ~/input
+```
+
+```bash
+/home/<USER>/hadoop/bin/hadoop jar
+```
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%205.png)
+
+To check xml files pasted to `/input`
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%206.png)
+
+```bash
+cd /home/<USER>/hadoop/share/hadoop/mapreduce
+```
+
+```bash
+/home/<USER>/hadoop/bin/hadoop jar /home/<USER>/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.10.2.jar grep ~/input ~/grep_example 'principal[.]*'
+```
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%207.png)
+
+1. Final outcome
+
+```bash
+cat ~/grep_example/*
+```
+
+![Untitled](Installing%20Hadoop%20over%20Ubuntu%20WSL%20ccc0b37293c84a70b7fb93c4587ec2c9/Untitled%208.png)
